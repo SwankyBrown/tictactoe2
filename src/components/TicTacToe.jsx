@@ -1,30 +1,54 @@
 import React, { useState } from 'react';
-import "../css/TicTacToe.css"
-function TicTacToe() {
-  const [board, setBoard] = useState(Array(9).fill(null));
-  const [xIsNext, setXIsNext] = useState(true)
+import '../css/TicTacToe.css';
 
-    const handleCellClick = (index) => {
-        if (board[index] || calculateWinner(board)) {
-            return;
-        }
-        
+function TicTacToe() {
+  const [board, setBoard] = useState(Array(9).fill(null)); // Initialize the board
+  const [xIsNext, setXIsNext] = useState(true); // Indicates if X is the next player
+
+  const winner = calculateWinner(board);
+  const isBoardFull = board.every((cell) => cell !== null); // Check if the board is full
+
+  let status;
+
+  if (winner) {
+    status = `Winner: ${winner}`;
+  } else if (isBoardFull) {
+    status = "It's a tie!";
+  } else {
+    status = `Next player: ${xIsNext ? 'X' : 'O'}`;
+  }
+
+  const handleCellClick = (index) => {
+    if (board[index] || winner || isBoardFull) {
+      return;
+    }
+
     const newBoard = board.slice();
-    newBoard[index] = xIsNext ? "X" : "O";
+    newBoard[index] = xIsNext ? 'X' : 'O';
     setBoard(newBoard);
     setXIsNext(!xIsNext);
-    };
+  };
+
+  const resetGame = () => {
+    setBoard(Array(9).fill(null));
+    setXIsNext(true);
+  };
 
   return (
-    <div className="board">
-    {board.map((cell, index) => (
-      <div key={index} className="cell" onClick={() => handleCellClick(index)}>
-        {cell}
+    <div>
+      <div className="status">{status}</div>
+      <div className="board">
+        {board.map((cell, index) => (
+          <div key={index} className="cell" onClick={() => handleCellClick(index)}>
+            {cell}
+          </div>
+        ))}
       </div>
-    ))}
-  </div>
-);
+      {(winner || isBoardFull) && <button onClick={resetGame}>Play Again</button>}
+    </div>
+  );
 }
+
 
 function calculateWinner(squares) {
     const lines = [
